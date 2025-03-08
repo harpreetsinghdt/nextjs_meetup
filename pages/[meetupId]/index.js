@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import Head from "next/head";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import MeetupDetail from "../../components/meetups/MeetupDetails";
 
 const Index = (props) => {
@@ -49,7 +49,7 @@ export const getStaticProps = async (context) => {
   const clction = db.collection("meetups");
   const result = await clction.findOne({ _id: new ObjectId(meetupId) });
   client.close();
-
+  console.log(result);
   return {
     props: {
       meetups: {
