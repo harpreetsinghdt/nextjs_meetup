@@ -1,14 +1,66 @@
 import React, { Fragment } from "react";
-import MeetupDetails from "../../components/meetups/MeetupDetails";
-const Index = () => {
+import Head from "next/head";
+import { MongoClient, ObjectId } from "mongodb";
+import MeetupDetail from "../../components/meetups/MeetupDetails";
+
+const MeetupDetails = (props) => {
   return (
-    <MeetupDetails
-      image="https://img.freepik.com/free-photo/toronto-skyline-from-park_649448-3496.jpg?semt=ais_hybrid"
-      title="First meetup"
-      address="100 main st, toronto"
-      description="This is cn tower of canada"
-    />
+    <Fragment>
+      <Head>
+        <title>{props.meetups.title}</title>
+        <meta name="description" content={props.meetups.description} />
+      </Head>
+      <MeetupDetail
+        image={props.meetups.image}
+        title={props.meetups.title}
+        address={props.meetups.address}
+        description={props.meetups.description}
+      />
+    </Fragment>
   );
 };
 
-export default Index;
+export const getStaticPaths = async () => {
+  const mongodb_connection_string =
+    "mongodb+srv://meetups_user:meetups_password@meetups.vpwrw.mongodb.net/?retryWrites=true&w=majority&appName=meetups";
+  const client = await MongoClient.connect(mongodb_connection_string);
+  const db = client.db("meetups");
+  const clction = db.collection("meetups");
+  const result = await clction.find({}, { _id: 1 }).toArray();
+  client.close();
+
+  return {
+    fallback: false,
+    paths: result.map((res) => ({
+      params: {
+        meetupId: res._id.toString(),
+      },
+    })),
+  };
+};
+
+export const getStaticProps = async (context) => {
+  const meetupId = context.params.meetupId;
+
+  const mongodb_connection_string =
+    "mongodb+srv://meetups_user:meetups_password@meetups.vpwrw.mongodb.net/?retryWrites=true&w=majority&appName=meetups";
+  const client = await MongoClient.connect(mongodb_connection_string);
+  const db = client.db("meetups");
+  const clction = db.collection("meetups");
+  const result = await clction.findOne({ _id: new ObjectId(meetupId) });
+  client.close();
+
+  return {
+    props: {
+      meetups: {
+        id: result._id.toString(),
+        title: result.title,
+        image: result.image,
+        address: result.address,
+        description: result.description,
+      },
+    },
+  };
+};
+
+export default MeetupDetails;
