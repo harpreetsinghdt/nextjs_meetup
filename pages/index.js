@@ -34,7 +34,7 @@ const Homepage = (props) => {
         <title>Nextjs Meetups</title>
         <meta name="description" content="Browse list of toronto meetups" />
       </Head>
-      <MeetupList meetups={props.meetups} />;
+      <MeetupList meetups={props.meetups} />
     </Fragment>
   );
 };

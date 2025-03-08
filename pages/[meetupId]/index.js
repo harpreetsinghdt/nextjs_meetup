@@ -3,7 +3,7 @@ import Head from "next/head";
 import { MongoClient, ObjectId } from "mongodb";
 import MeetupDetail from "../../components/meetups/MeetupDetails";
 
-const MeetupDetails = (props) => {
+const Index = (props) => {
   return (
     <Fragment>
       <Head>
@@ -30,7 +30,7 @@ export const getStaticPaths = async () => {
   client.close();
 
   return {
-    fallback: "blocking",
+    fallback: true,
     paths: result.map((res) => ({
       params: {
         meetupId: res._id.toString(),
@@ -63,4 +63,4 @@ export const getStaticProps = async (context) => {
   };
 };
 
-export default MeetupDetails;
+export default Index;
